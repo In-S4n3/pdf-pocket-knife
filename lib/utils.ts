@@ -63,7 +63,7 @@ const openDB = (): Promise<IDBDatabase> => {
 };
 
 // 2. Storing Buffer in IndexedDB
-export const storeBuffer = async (buffer: ArrayBuffer): Promise<void> => {
+export const storeFile = async (buffer: ArrayBuffer): Promise<void> => {
   const db = await openDB();
 
   return new Promise((resolve, reject) => {
@@ -82,7 +82,7 @@ export const storeBuffer = async (buffer: ArrayBuffer): Promise<void> => {
 };
 
 // 3. Retrieving Buffer from IndexedDB
-export const getBuffer = async (): Promise<ArrayBuffer | null> => {
+export const getFile = async (): Promise<ArrayBuffer | null> => {
   const db = await openDB();
 
   return new Promise((resolve, reject) => {

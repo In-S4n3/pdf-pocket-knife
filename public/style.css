@@ -1,0 +1,12 @@
+.header {
+  position: fixed;
+  width: 100%;
+  height: 5vh;
+}
+
+#pspdfkit {
+  position: fixed;
+  top: 5vh;
+  width: 100%;
+  height: calc(100% - 5vh);
+}

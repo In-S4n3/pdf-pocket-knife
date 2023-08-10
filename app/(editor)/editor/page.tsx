@@ -3,7 +3,7 @@
 import { useFileContext } from "@/app/context/FileContext";
 import { useEffect, useRef } from "react";
 import { customIcons } from "./customIcons";
-import { getBuffer, getPSPDFKitLicenseKey } from "@/lib/utils";
+import { getFile, getPSPDFKitLicenseKey } from "@/lib/utils";
 
 export default function App() {
   const containerRef = useRef(null);
@@ -26,7 +26,7 @@ export default function App() {
         theme: PSPDFKit.Theme.AUTO,
         enableHistory: true,
         container,
-        document: buffer || (await getBuffer()),
+        document: buffer || (await getFile()),
         baseUrl: `${window.location.protocol}//${window.location.host}/`,
       }).then((instance: any) => {
         const items = instance.toolbarItems;

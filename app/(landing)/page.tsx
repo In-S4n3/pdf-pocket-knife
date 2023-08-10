@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { useFileContext } from "../context/FileContext";
 import { useRouter } from "next/navigation";
-import { storeBuffer } from "@/lib/utils";
+import { storeFile } from "@/lib/utils";
 
 export default function Home() {
   const router = useRouter();
@@ -13,7 +13,7 @@ export default function Home() {
     const file = e.target.files[0];
     const buffer: any = await file.arrayBuffer();
     setBuffer(buffer);
-    await storeBuffer(buffer);
+    await storeFile(buffer);
     router.push("/editor");
   };
 
