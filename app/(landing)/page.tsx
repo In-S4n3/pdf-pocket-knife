@@ -19,7 +19,12 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Input type="file" className="w-[50%]" onChange={(e) => handleFile(e)} />
+      <Input
+        type="file"
+        className="w-[50%]"
+        onChange={(e) => handleFile(e)}
+        accept="application/pdf"
+      />
     </main>
   );
 }
