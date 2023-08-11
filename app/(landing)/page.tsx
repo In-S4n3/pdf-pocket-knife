@@ -1,11 +1,13 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import { useFileContext } from "../context/FileContext";
 import { useRouter } from "next/navigation";
 import { storeFile } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useRef } from "react";
 
 export default function Home() {
+  const refButton = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
   const { setBuffer } = useFileContext();
 
@@ -18,12 +20,22 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Input
+    <main className="flex flex-col items-center justify-between p-24">
+      <Button
+        className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm md:text-lg"
+        size={"lg"}
+        onClick={() => {
+          refButton.current?.click();
+        }}
+      >
+        Upload your PDF
+      </Button>
+      <input
         type="file"
-        className="w-[50%]"
+        className="w-auto hidden"
         onChange={(e) => handleFile(e)}
         accept="application/pdf"
+        ref={refButton}
       />
     </main>
   );
