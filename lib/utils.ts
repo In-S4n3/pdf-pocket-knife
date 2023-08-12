@@ -1,6 +1,8 @@
 "use client";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { storage } from "../configs/firebase";
+import { ref, uploadBytes } from "firebase/storage";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -98,4 +100,15 @@ export const getFile = async (): Promise<ArrayBuffer | null> => {
       resolve(event.target.result);
     };
   });
+};
+
+export const uploadToFirebase = async (buffer: Buffer, file: any) => {
+  try {
+    const blob = new Blob([buffer], { type: "application/pdf" });
+    const fileRef = ref(storage, `PDF/${file.name + new Date()}`);
+    const success = await uploadBytes(fileRef, blob);
+    return success;
+  } catch (error) {
+    console.error(error);
+  }
 };

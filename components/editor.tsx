@@ -4,10 +4,12 @@ import { useFileContext } from "@/app/context/FileContext";
 import { useEffect, useRef } from "react";
 import { colors, customIcons } from "../app/(editor)/editor/cusmtomizations";
 import { getFile, getPSPDFKitLicenseKey } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 export default function Editor() {
+  const router = useRouter();
   const containerRef = useRef(null);
-  const { buffer } = useFileContext();
+  const { buffer, file } = useFileContext();
 
   useEffect(() => {
     const container = containerRef.current;
@@ -48,7 +50,7 @@ export default function Editor() {
         },
       }).then((instance: any) => {
         const items = instance.toolbarItems;
-        const { downloadButton } = customIcons(instance);
+        const { downloadButton } = customIcons(instance, file, router);
 
         console.log(items);
 

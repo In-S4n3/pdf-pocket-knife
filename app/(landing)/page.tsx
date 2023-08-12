@@ -9,13 +9,15 @@ import { useRef } from "react";
 export default function Home() {
   const refButton = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
-  const { setBuffer } = useFileContext();
+  const { setBuffer, setFile } = useFileContext();
 
   const handleFile = async (e: any) => {
     const file = e.target.files[0];
+    setFile(file);
     const buffer: any = await file.arrayBuffer();
     setBuffer(buffer);
     await storeFile(buffer);
+
     router.push("/editor");
   };
 
