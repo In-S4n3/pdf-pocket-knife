@@ -10,7 +10,7 @@ const montserrat = Montserrat({ weight: "600", subsets: ["latin"] });
 
 const Navbar = () => {
   return (
-    <div className="flex w-full justify-between p-5">
+    <div className="flex w-full justify-between py-5 px-10">
       <div
         className={cn(
           "flex space-x-4 items-center text-2xl font-bold",

@@ -1,4 +1,5 @@
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/app/context/theme-provider";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -22,7 +23,9 @@ export default function RootLayout({
         <head />
         <body className={inter.className}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <FileContextProvider>{children}</FileContextProvider>
+            <ClerkProvider>
+              <FileContextProvider>{children}</FileContextProvider>
+            </ClerkProvider>
           </ThemeProvider>
         </body>
       </html>

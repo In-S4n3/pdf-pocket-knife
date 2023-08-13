@@ -2,7 +2,14 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { storage } from "../configs/firebase";
-import { ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  listAll,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
+import { uuid } from "uuidv4";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -105,10 +112,44 @@ export const getFile = async (): Promise<ArrayBuffer | null> => {
 export const uploadToFirebase = async (buffer: Buffer, file: any) => {
   try {
     const blob = new Blob([buffer], { type: "application/pdf" });
-    const fileRef = ref(storage, `PDF/${file.name + new Date()}`);
+    const fileRef = ref(
+      storage,
+      `PDF/${file.name + "_" + uuid() + "_" + new Date()}`
+    );
     const success = await uploadBytes(fileRef, blob);
     return success;
   } catch (error) {
     console.error(error);
   }
+};
+
+export const getFilesFromFirebase = async () => {
+  const fileRef = ref(storage, `PDF/`);
+  const files = await listAll(fileRef);
+
+  const filesDetails = await Promise.all(
+    files.items.map(async (file) => {
+      const filePathSplited = file.fullPath.split("_");
+      const name = filePathSplited[0].slice(4, filePathSplited[0].length);
+      const id = filePathSplited[1];
+      const date = filePathSplited[2];
+      const url = await getDownloadURL(file);
+
+      return { url, name, id, date: date };
+    })
+  );
+
+  return filesDetails;
+};
+
+export const deleteFileFromFirebase = async (filePath: string) => {
+  const fileRef = ref(storage, `PDF/${filePath}`);
+
+  deleteObject(fileRef)
+    .then(() => {
+      console.log("File deleted");
+    })
+    .catch((error) => {
+      console.log("Uh-oh, an error occurred!");
+    });
 };
