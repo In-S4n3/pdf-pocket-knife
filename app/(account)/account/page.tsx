@@ -25,10 +25,10 @@ const AccountPage = () => {
   }, []);
 
   return (
-    <main className="min-h-full flex items-center justify-center">
+    <main className="h-full flex flex-col items-center justify-center space-y-10">
+      <h1 className="text-4xl py-10">Your List of Files</h1>
       <div className="w-3/4">
         <Table>
-          <TableCaption>Your Files</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Name</TableHead>

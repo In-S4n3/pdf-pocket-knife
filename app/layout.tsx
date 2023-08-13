@@ -1,11 +1,11 @@
-import { ThemeProvider } from "@/app/context/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { FileContextProvider } from "./context/FileContext";
 
-const inter = Inter({ subsets: ["latin"] });
+import { FileContextProvider } from "./context/FileContext";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ weight: "600", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "PDF SaaS",
@@ -21,12 +21,10 @@ export default function RootLayout({
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <body className={inter.className}>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <ClerkProvider>
-              <FileContextProvider>{children}</FileContextProvider>
-            </ClerkProvider>
-          </ThemeProvider>
+        <body className={montserrat.className}>
+          <ClerkProvider>
+            <FileContextProvider>{children}</FileContextProvider>
+          </ClerkProvider>
         </body>
       </html>
     </>

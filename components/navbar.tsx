@@ -24,7 +24,6 @@ const Navbar = () => {
         </p>
       </div>
       <div className="flex space-x-5">
-        <ModeToggle />
         <Link href={"account"}>
           <Button className="flex space-x-2">
             <Settings />
