@@ -8,7 +8,7 @@ import { Montserrat } from "next/font/google";
 const montserrat = Montserrat({ weight: "600", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PDF SaaS",
+  title: "PDF Pocket Knife",
   description: "Edit and download any PDF",
 };
 
