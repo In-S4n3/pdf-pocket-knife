@@ -49,7 +49,7 @@ const PreviewPage = ({ params }: { params: { id: string } }) => {
     (async function () {
       const response = url && (await axios.post("/api/pdfText", { url }));
       if (response) {
-        setPdfText(response?.data.text);
+        setPdfText(response?.data);
       }
     })();
   }, [url]);

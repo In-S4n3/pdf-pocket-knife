@@ -1,9 +1,10 @@
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
+import { PocketKnife } from "lucide-react";
 
 export const UiAvatar = () => {
   return (
-    <Avatar className="h-8 w-8">
-      <AvatarImage className="p-1" src="/images/logo.png" />
+    <Avatar className="flex items-center">
+      <PocketKnife />
     </Avatar>
   );
 };
