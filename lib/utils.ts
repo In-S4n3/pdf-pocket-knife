@@ -15,6 +15,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Editor functions ---------------------------------------------------------------------
 export const getPSPDFKitLicenseKey = () => {
   const ENV = process.env.NEXT_PUBLIC_ENV;
   const PROD_KEY = process.env.NEXT_PUBLIC_PSPDFKIT_KEY;
@@ -51,6 +52,7 @@ export const triggerDownload = async (buffer: Buffer) => {
   }
 };
 
+// Indexed DB functions ---------------------------------------------------------------------
 // 1. Setup IndexedDB
 const openDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
@@ -109,6 +111,7 @@ export const getFile = async (): Promise<ArrayBuffer | null> => {
   });
 };
 
+// Firebase functions ---------------------------------------------------------------------
 export const uploadToFirebase = async (buffer: Buffer, file: any) => {
   try {
     const blob = new Blob([buffer], { type: "application/pdf" });
@@ -129,8 +132,9 @@ export const getFilesFromFirebase = async () => {
 
   const filesDetails = await Promise.all(
     files.items.map(async (file) => {
-      const filePathSplited = file.fullPath.split("_");
-      const name = filePathSplited[0].slice(4, filePathSplited[0].length);
+      const splitOnPdf = file.fullPath.split(".pdf");
+      const filePathSplited = splitOnPdf[1].split("_");
+      const name = splitOnPdf[0].slice(4, splitOnPdf[0].length);
       const id = filePathSplited[1];
       const date = filePathSplited[2];
       const url = await getDownloadURL(file);

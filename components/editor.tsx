@@ -52,8 +52,6 @@ export default function Editor() {
         const items = instance.toolbarItems;
         const { downloadButton } = customIcons(instance, file, router);
 
-        console.log(items);
-
         instance.setToolbarItems(
           items.splice(11, 0, { type: "rectangle" }) &&
             items.splice(25, 1) &&

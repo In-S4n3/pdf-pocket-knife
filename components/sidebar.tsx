@@ -1,6 +1,8 @@
+"use client";
 import { UserButton } from "@clerk/nextjs";
 import { PocketKnifeIcon } from "lucide-react";
 import Link from "next/link";
+import UploadButton from "./uploadButton";
 
 const Sidebar = () => {
   return (
@@ -17,6 +19,9 @@ const Sidebar = () => {
         <div className="flex pl-20">
           <UserButton afterSignOutUrl="/" />
         </div>
+      </div>
+      <div className="flex w-full justify-center">
+        <UploadButton />
       </div>
     </div>
   );

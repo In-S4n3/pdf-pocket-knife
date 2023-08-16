@@ -52,6 +52,7 @@ const AccountPage = () => {
           </TableHeader>
           <TableBody>
             {filesList?.map(({ name, url, id, date }) => {
+              console.log(name, id, date);
               const filePath = `${name}_${id}_${date}`;
               return (
                 <TableRow key={id}>
