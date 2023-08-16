@@ -15,6 +15,7 @@ import { FileList } from "@/typings";
 import { Trash2 } from "lucide-react";
 import axios from "axios";
 import { ChatCompletionRequestMessage } from "openai";
+import { Heading } from "@/components/heading";
 
 const AccountPage = () => {
   const [filesList, setFilesList] = useState<FileList>();
@@ -37,7 +38,7 @@ const AccountPage = () => {
 
   return (
     <main className="h-full flex flex-col items-center justify-center space-y-10">
-      <h1 className="text-4xl py-10">Your List of Files</h1>
+      <Heading title="Your list of files" />
       <div className="w-3/4">
         <Table>
           <TableHeader>

@@ -21,7 +21,7 @@ export default function RootLayout({
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <body className={`${montserrat.className} bg-slate-300`}>
+        <body className={montserrat.className}>
           <ClerkProvider>
             <FileContextProvider>{children}</FileContextProvider>
           </ClerkProvider>

@@ -13,6 +13,7 @@ const UploadButton = () => {
     const file = e.target.files[0];
     setFile(file);
     const buffer: any = await file.arrayBuffer();
+    console.log(buffer);
     setBuffer(buffer);
     await storeFile(buffer);
 

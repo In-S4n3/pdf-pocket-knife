@@ -142,6 +142,19 @@ export const getFilesFromFirebase = async () => {
   return filesDetails;
 };
 
+export const getSingleFileURLFromFirebase = async (id: string) => {
+  const fileRef = ref(storage, `PDF/`);
+  const files = await listAll(fileRef);
+
+  const file = files.items.find((file) => {
+    if (file.fullPath.includes(id)) {
+      return file;
+    }
+  });
+
+  return file && (await getDownloadURL(file));
+};
+
 export const deleteFileFromFirebase = async (filePath: string) => {
   const fileRef = ref(storage, `PDF/${filePath}`);
 
