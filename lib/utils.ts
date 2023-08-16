@@ -9,7 +9,7 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
-import { uuid } from "uuidv4";
+import { v4 } from "uuid";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -117,7 +117,7 @@ export const uploadToFirebase = async (buffer: Buffer, file: any) => {
     const blob = new Blob([buffer], { type: "application/pdf" });
     const fileRef = ref(
       storage,
-      `PDF/${file.name + "_" + uuid() + "_" + new Date()}`
+      `PDF/${file.name + "_" + v4() + "_" + new Date()}`
     );
     const success = await uploadBytes(fileRef, blob);
     return success;
@@ -132,9 +132,10 @@ export const getFilesFromFirebase = async () => {
 
   const filesDetails = await Promise.all(
     files.items.map(async (file) => {
+      const match = file.fullPath.match(/\/(.*\.pdf)/);
       const splitOnPdf = file.fullPath.split(".pdf");
       const filePathSplited = splitOnPdf[1].split("_");
-      const name = splitOnPdf[0].slice(4, splitOnPdf[0].length);
+      const name = match && match[1];
       const id = filePathSplited[1];
       const date = filePathSplited[2];
       const url = await getDownloadURL(file);

@@ -14,15 +14,12 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { UserAvatar } from "@/components/userAvatar";
 import { UiAvatar } from "@/components/uiAvatar";
-import Editor from "@/components/editor";
 import { Heading } from "@/components/heading";
 import { Empty } from "@/components/empty";
-import { useFileContext } from "@/app/context/FileContext";
 
 const PreviewPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   const { id } = params;
-  const { setBuffer } = useFileContext();
   const [url, setUrl] = useState("");
   const [pdfText, setPdfText] = useState("");
   const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([]);
