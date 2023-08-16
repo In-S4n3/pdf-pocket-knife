@@ -59,7 +59,9 @@ const AccountPage = () => {
                     {new Date(date).toDateString()}
                   </TableCell>
                   <TableCell className="font-medium text-right">
-                    <Button onClick={() => sendUrl(url)}>AI</Button>
+                    <Link href={`preview/${id}`}>
+                      <Button>Preview / AI</Button>
+                    </Link>
                   </TableCell>
                   <TableCell className="font-medium text-right">
                     <Link href={url}>
