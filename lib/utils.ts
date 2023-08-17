@@ -140,7 +140,9 @@ export const getFilesFromFirebase = async () => {
       const date = filePathSplited[2];
       const url = await getDownloadURL(file);
 
-      return { url, name, id, date: date };
+      return name
+        ? { url, name, id, date: date }
+        : { url, name: "", id, date: date };
     })
   );
 

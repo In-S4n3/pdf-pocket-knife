@@ -32,7 +32,8 @@ const AccountPage = () => {
 
   useEffect(() => {
     (async function () {
-      setFilesList(await getFilesFromFirebase());
+      const files = await getFilesFromFirebase();
+      if (files) setFilesList(files);
     })();
   }, []);
 
