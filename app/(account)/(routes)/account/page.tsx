@@ -17,13 +17,14 @@ import { Heading } from "@/components/heading";
 
 const AccountPage = () => {
   const [filesList, setFilesList] = useState<FileList>();
+  const [isDeletedFile, setIsDeletedFile] = useState(false);
 
   useEffect(() => {
     (async function () {
       const files = await getFilesFromFirebase();
       if (files) setFilesList(files);
     })();
-  }, []);
+  }, [isDeletedFile]);
 
   return (
     <main className="h-full flex flex-col items-center justify-center space-y-10">
@@ -59,7 +60,12 @@ const AccountPage = () => {
                     </Link>
                   </TableCell>
                   <TableCell className="font-medium text-right">
-                    <Button onClick={() => deleteFileFromFirebase(filePath)}>
+                    <Button
+                      onClick={async () => {
+                        await deleteFileFromFirebase(filePath);
+                        setIsDeletedFile(true);
+                      }}
+                    >
                       <Trash2 />
                     </Button>
                   </TableCell>
