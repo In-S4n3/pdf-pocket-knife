@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     const { userId } = auth();
     const body = await req.json();
     const { messages, pdfText } = body;
-    const chunks = splitIntoChunks(pdfText, 2500);
+    const chunks = splitIntoChunks(pdfText, 2750);
     let response: any[] = [];
 
     if (!userId) {
@@ -59,13 +59,14 @@ export async function POST(req: Request) {
       const result = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
         messages: [instructionMessage, ...messages],
+        temperature: 0.2,
       });
 
       response.push(result.data.choices[0].message);
     }
 
     if (response.length > 1) {
-      return NextResponse.json(response[response.length - 2]);
+      return NextResponse.json(response[response.length - 1]);
     }
     return NextResponse.json(response[0]);
   } catch (error) {
