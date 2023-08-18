@@ -9,16 +9,25 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 const splitIntoChunks = (text: string, maxTokens: number) => {
+  if (maxTokens < 1) {
+    return [];
+  }
+
   const words = text.split(" ");
   const chunks = [];
-  let currentChunk = "";
+  let currentChunk = words[0];
+  let currentChunkLength = 1;
 
-  for (const word of words) {
-    if ((currentChunk + word).split(" ").length < maxTokens) {
+  for (let i = 1; i < words.length; i++) {
+    const word = words[i];
+
+    if (currentChunkLength + 1 <= maxTokens) {
       currentChunk += " " + word;
+      currentChunkLength++;
     } else {
       chunks.push(currentChunk);
       currentChunk = word;
+      currentChunkLength = 1;
     }
   }
 
@@ -31,38 +40,38 @@ const splitIntoChunks = (text: string, maxTokens: number) => {
 
 export async function POST(req: Request) {
   try {
-    const { userId } = auth();
-    const body = await req.json();
-    const { messages, pdfText } = body;
-    const chunks = splitIntoChunks(pdfText, 12000);
-    let response: any[] = [];
-
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
     if (!configuration.apiKey) {
       return new NextResponse("OpenAI API Key not configured.", {
         status: 500,
       });
     }
+    const { userId } = auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const body = await req.json();
+    const { messages, pdfText } = body;
+    const chunks = splitIntoChunks(pdfText, 12000);
 
     if (!messages) {
       return new NextResponse("Messages are required", { status: 400 });
     }
+
+    let response: any[] = [];
     for (const chunk of chunks) {
       const instructionMessage: ChatCompletionRequestMessage = {
         role: "system",
         content: `You are a helpful assistant with  access to ${chunk} designed to answer questions ONLY from the given document content else say that you don't know the answer and always answer the queries in the language they are asked in. If the 'QUESTION' is in English, answer in English. If the 'QUESTION' is in Spanish, answer in Spanish and similarly if the QUESTION' is in XYZ language, answer it in the same XYZ language. Be as accurate as possible in providing answers only from the given document context. You are not like ChatGPT that answers every question. Answer only if it found in the given document content.`,
       };
 
-      const result = await openai.createChatCompletion({
+      const requests = await openai.createChatCompletion({
         model: "gpt-3.5-turbo-16k",
         messages: [instructionMessage, ...messages],
         temperature: 0.2,
       });
-
-      response.push(result.data.choices[0].message);
+      response.push(requests.data.choices[0].message);
     }
 
     if (response.length > 1) {
