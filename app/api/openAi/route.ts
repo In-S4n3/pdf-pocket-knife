@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     const { userId } = auth();
     const body = await req.json();
     const { messages, pdfText } = body;
-    const chunks = splitIntoChunks(pdfText, 2750);
+    const chunks = splitIntoChunks(pdfText, 12000);
     let response: any[] = [];
 
     if (!userId) {
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
       };
 
       const result = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
+        model: "gpt-3.5-turbo-16k",
         messages: [instructionMessage, ...messages],
         temperature: 0.2,
       });

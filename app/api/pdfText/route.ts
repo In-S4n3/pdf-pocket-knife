@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
 
     if (!url) {
-      return new NextResponse("Url are required", { status: 400 });
+      return new NextResponse("Url is required", { status: 400 });
     }
 
     const buffer = await axios.get(url, {
@@ -24,7 +24,13 @@ export async function POST(req: Request) {
     const pdfObject = await PdfParse(buffer.data);
     const text = pdfObject.text;
 
-    return NextResponse.json(text);
+    // 1. Remove punctuation
+    const cleanText = text.replace(/[.,!;?]/g, "");
+
+    // 2. Remove extra spaces (including new lines and tabs)
+    const minimizedText = cleanText.replace(/\s+/g, " ").trim();
+
+    return NextResponse.json(minimizedText);
   } catch (error) {
     console.log(["ERROR"], error);
     return new NextResponse("Internal Error", { status: 500 });
