@@ -21,7 +21,7 @@ const UploadButton = () => {
   return (
     <div>
       <Button
-        className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm md:text-lg"
+        className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm md:text-lg border-2 border-cyan-950 hover:animate-pulse hover:text-xl"
         size={"lg"}
         onClick={() => {
           refButton.current?.click();

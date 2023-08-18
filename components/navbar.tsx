@@ -24,7 +24,7 @@ const Navbar = () => {
           <span className="gradient-text hidden md:block">Pocket-Knife</span>
         </p>
       </div>
-      <div className="flex space-x-5">
+      <div className="flex space-x-5 items-center">
         <Link href={"/account"}>
           <Button className="flex space-x-2">
             <Settings />
