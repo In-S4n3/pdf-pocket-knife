@@ -8,6 +8,76 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
+type ChatCompletionRequest = {
+  role: "user" | "assistant";
+  content: string;
+};
+
+function tokenize(text: string): string[] {
+  return text
+    .toLowerCase()
+    .split(/\W+/)
+    .filter((token) => token.length > 0);
+}
+
+function vectorize(tokens: string[]): Map<string, number> {
+  const vector = new Map<string, number>();
+  tokens.forEach((token) => {
+    vector.set(token, (vector.get(token) || 0) + 1);
+  });
+  return vector;
+}
+
+function cosineSimilarity(
+  vecA: Map<string, number>,
+  vecB: Map<string, number>
+): number {
+  let dotProduct = 0;
+  let magnitudeA = 0;
+  let magnitudeB = 0;
+
+  vecA.forEach((val, key) => {
+    dotProduct += val * (vecB.get(key) || 0);
+    magnitudeA += val * val;
+  });
+
+  vecB.forEach((val) => {
+    magnitudeB += val * val;
+  });
+
+  return dotProduct / (Math.sqrt(magnitudeA) * Math.sqrt(magnitudeB));
+}
+
+function findBestResponse(
+  userMessages: ChatCompletionRequest[],
+  possibleResponses: ChatCompletionRequest[]
+): ChatCompletionRequest {
+  // We will consider the last message from the user as the actual question.
+  const lastUserMessage = userMessages[userMessages.length - 1];
+
+  const questionTokens = tokenize(lastUserMessage.content);
+  const questionVector = vectorize(questionTokens);
+
+  let bestScore = 0;
+  let bestResponse: ChatCompletionRequest = { role: "assistant", content: "" };
+
+  possibleResponses.forEach((responseObj) => {
+    if (responseObj.role === "assistant") {
+      const responseTokens = tokenize(responseObj.content);
+      const responseVector = vectorize(responseTokens);
+
+      const score = cosineSimilarity(questionVector, responseVector);
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestResponse = responseObj;
+      }
+    }
+  });
+
+  return bestResponse;
+}
+
 const splitIntoChunks = (text: string, maxTokens: number) => {
   if (maxTokens < 1) {
     return [];
@@ -53,9 +123,7 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const { messages, pdfText } = body;
-    const chunks = splitIntoChunks(pdfText, 12000);
-
-    console.log(messages);
+    const chunks = splitIntoChunks(pdfText, 10000);
 
     if (!messages) {
       return new NextResponse("Messages are required", { status: 400 });
@@ -65,21 +133,18 @@ export async function POST(req: Request) {
     for (const chunk of chunks) {
       const instructionMessage: ChatCompletionRequestMessage = {
         role: "system",
-        content: `You are a helpful assistant with  access to ${chunk} designed to answer questions ONLY from the given document content else say that you don't know the answer and always answer the queries in the language they are asked in. If the 'QUESTION' is in English, answer in English. If the 'QUESTION' is in Spanish, answer in Spanish and similarly if the QUESTION' is in XYZ language, answer it in the same XYZ language. Be as accurate as possible in providing answers only from the given document context. You are not like ChatGPT that answers every question. Answer only if it found in the given document content.`,
+        content: `You are a helpful assistant with access to ${chunk} designed to answer questions ONLY from the given document content else say that you don't know the answer and always answer the queries in the language they are asked in. If the 'QUESTION' is in English, answer in English. If the 'QUESTION' is in Spanish, answer in Spanish and similarly if the QUESTION' is in XYZ language, answer it in the same XYZ language. Be as accurate as possible in providing answers only from the given document context. You are not like ChatGPT that answers every question. Answer only if it found in the given document content.`,
       };
 
       const requests = await openai.createChatCompletion({
         model: "gpt-3.5-turbo-16k",
         messages: [instructionMessage, ...messages],
-        temperature: 0.2,
+        temperature: 0.4,
       });
       response.push(requests.data.choices[0].message);
     }
-    console.log(response);
-    if (response.length > 1) {
-      return NextResponse.json(response[response.length - 2]);
-    }
-    return NextResponse.json(response[0]);
+
+    return NextResponse.json(findBestResponse(messages, response));
   } catch (error) {
     console.dir(error, { depth: 5 });
     return new NextResponse("Internal Error", { status: 500 });
