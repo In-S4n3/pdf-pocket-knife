@@ -20,60 +20,62 @@ function tokenize(text: string): string[] {
     .filter((token) => token.length > 0);
 }
 
-function vectorize(tokens: string[]): Map<string, number> {
-  const vector = new Map<string, number>();
-  tokens.forEach((token) => {
-    vector.set(token, (vector.get(token) || 0) + 1);
-  });
-  return vector;
+function isNegativeResponse(response: string): boolean {
+  const negativePhrases = [
+    "i don't know",
+    "i'm sorry",
+    "cannot find",
+    "no information",
+    "i apologize",
+  ];
+  return negativePhrases.some((phrase) =>
+    response.toLowerCase().includes(phrase)
+  );
 }
 
-function cosineSimilarity(
-  vecA: Map<string, number>,
-  vecB: Map<string, number>
+function scoreResponse(
+  userTokensArray: string[][],
+  responseContent: string
 ): number {
-  let dotProduct = 0;
-  let magnitudeA = 0;
-  let magnitudeB = 0;
-
-  vecA.forEach((val, key) => {
-    dotProduct += val * (vecB.get(key) || 0);
-    magnitudeA += val * val;
+  const responseTokens = tokenize(responseContent);
+  let score = 0;
+  userTokensArray.forEach((userTokens) => {
+    score += userTokens.filter((token) =>
+      responseTokens.includes(token)
+    ).length;
   });
-
-  vecB.forEach((val) => {
-    magnitudeB += val * val;
-  });
-
-  return dotProduct / (Math.sqrt(magnitudeA) * Math.sqrt(magnitudeB));
+  return score;
 }
 
 function findBestResponse(
   userMessages: ChatCompletionRequest[],
   possibleResponses: ChatCompletionRequest[]
 ): ChatCompletionRequest {
-  // We will consider the last message from the user as the actual question.
-  const lastUserMessage = userMessages[userMessages.length - 1];
-
-  const questionTokens = tokenize(lastUserMessage.content);
-  const questionVector = vectorize(questionTokens);
+  const userTokensArray = userMessages
+    .filter((message) => message.role === "user")
+    .map((message) => tokenize(message.content));
 
   let bestScore = 0;
   let bestResponse: ChatCompletionRequest = { role: "assistant", content: "" };
 
   possibleResponses.forEach((responseObj) => {
-    if (responseObj.role === "assistant") {
-      const responseTokens = tokenize(responseObj.content);
-      const responseVector = vectorize(responseTokens);
+    if (
+      responseObj.role === "assistant" &&
+      !isNegativeResponse(responseObj.content)
+    ) {
+      const currentScore = scoreResponse(userTokensArray, responseObj.content);
 
-      const score = cosineSimilarity(questionVector, responseVector);
-
-      if (score > bestScore) {
-        bestScore = score;
+      if (currentScore > bestScore) {
+        bestScore = currentScore;
         bestResponse = responseObj;
       }
     }
   });
+
+  // If no valid response is found, revert to the first one (even if it's negative)
+  if (bestResponse.content === "") {
+    bestResponse = possibleResponses[0];
+  }
 
   return bestResponse;
 }
