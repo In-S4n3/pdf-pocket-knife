@@ -55,8 +55,6 @@ export async function POST(req: Request) {
     const { messages, pdfText } = body;
     const chunks = splitIntoChunks(pdfText, 12000);
 
-    console.log(messages);
-
     if (!messages) {
       return new NextResponse("Messages are required", { status: 400 });
     }
@@ -71,11 +69,11 @@ export async function POST(req: Request) {
       const requests = await openai.createChatCompletion({
         model: "gpt-3.5-turbo-16k",
         messages: [instructionMessage, ...messages],
-        temperature: 0.2,
+        temperature: 0.4,
       });
       response.push(requests.data.choices[0].message);
     }
-    console.log(response);
+
     if (response.length > 1) {
       return NextResponse.json(response[response.length - 2]);
     }
