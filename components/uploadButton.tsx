@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 import { useFileContext } from "@/app/context/FileContext";
 
-const UploadButton = () => {
+export const UploadButton = () => {
   const refButton = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
   const { setBuffer, setFile } = useFileContext();
@@ -39,5 +39,3 @@ const UploadButton = () => {
     </div>
   );
 };
-
-export default UploadButton;

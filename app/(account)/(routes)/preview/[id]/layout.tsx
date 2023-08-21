@@ -1,4 +1,4 @@
-import Navbar from "@/components/navbar";
+import { Navbar } from "@/components/navbar";
 
 const PreviewLayout = async ({ children }: { children: React.ReactNode }) => {
   return (

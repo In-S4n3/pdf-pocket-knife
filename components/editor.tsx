@@ -6,7 +6,7 @@ import { colors, customIcons } from "../app/(editor)/editor/cusmtomizations";
 import { getFile, getPSPDFKitLicenseKey } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
-export default function Editor() {
+export function Editor() {
   const router = useRouter();
   const containerRef = useRef(null);
   const { buffer, file } = useFileContext();
