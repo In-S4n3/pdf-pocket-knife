@@ -13,14 +13,14 @@ type ChatCompletionRequest = {
   content: string;
 };
 
-function tokenize(text: string): string[] {
+const tokenize = (text: string): string[] => {
   return text
     .toLowerCase()
     .split(/\W+/)
     .filter((token) => token.length > 0);
-}
+};
 
-function isNegativeResponse(response: string): boolean {
+const isNegativeResponse = (response: string): boolean => {
   const negativePhrases = [
     "i don't know",
     "i'm sorry",
@@ -31,12 +31,12 @@ function isNegativeResponse(response: string): boolean {
   return negativePhrases.some((phrase) =>
     response.toLowerCase().includes(phrase)
   );
-}
+};
 
-function scoreResponse(
+const scoreResponse = (
   userTokensArray: string[][],
   responseContent: string
-): number {
+): number => {
   const responseTokens = tokenize(responseContent);
   let score = 0;
   userTokensArray.forEach((userTokens) => {
@@ -45,12 +45,12 @@ function scoreResponse(
     ).length;
   });
   return score;
-}
+};
 
-function findBestResponse(
+const findBestResponse = (
   userMessages: ChatCompletionRequest[],
   possibleResponses: ChatCompletionRequest[]
-): ChatCompletionRequest {
+): ChatCompletionRequest => {
   const userTokensArray = userMessages
     .filter((message) => message.role === "user")
     .map((message) => tokenize(message.content));
@@ -91,7 +91,7 @@ function findBestResponse(
   }
 
   return bestResponse;
-}
+};
 
 const splitIntoChunks = (text: string, maxTokens: number) => {
   if (maxTokens < 1) {
