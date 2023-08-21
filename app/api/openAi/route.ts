@@ -55,6 +55,19 @@ function findBestResponse(
     .filter((message) => message.role === "user")
     .map((message) => tokenize(message.content));
 
+  // Check for specific user questions and return respective responses
+  if (userMessages[0].content.includes("how many pages")) {
+    return possibleResponses[possibleResponses.length - 1];
+  }
+  if (
+    userMessages[0].content.includes("give me a list") ||
+    userMessages[0].content.includes("asks for a list")
+  ) {
+    return possibleResponses.reduce((longest, current) =>
+      current.content.length > longest.content.length ? current : longest
+    );
+  }
+
   let bestScore = 0;
   let bestResponse: ChatCompletionRequest = { role: "assistant", content: "" };
 
@@ -145,6 +158,8 @@ export async function POST(req: Request) {
       });
       response.push(requests.data.choices[0].message);
     }
+
+    console.log(response);
 
     return NextResponse.json(findBestResponse(messages, response));
   } catch (error) {
