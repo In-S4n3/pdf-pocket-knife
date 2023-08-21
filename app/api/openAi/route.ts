@@ -8,6 +8,91 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
+type ChatCompletionRequest = {
+  role: "user" | "assistant";
+  content: string;
+};
+
+function tokenize(text: string): string[] {
+  return text
+    .toLowerCase()
+    .split(/\W+/)
+    .filter((token) => token.length > 0);
+}
+
+function isNegativeResponse(response: string): boolean {
+  const negativePhrases = [
+    "i don't know",
+    "i'm sorry",
+    "cannot find",
+    "no information",
+    "i apologize",
+  ];
+  return negativePhrases.some((phrase) =>
+    response.toLowerCase().includes(phrase)
+  );
+}
+
+function scoreResponse(
+  userTokensArray: string[][],
+  responseContent: string
+): number {
+  const responseTokens = tokenize(responseContent);
+  let score = 0;
+  userTokensArray.forEach((userTokens) => {
+    score += userTokens.filter((token) =>
+      responseTokens.includes(token)
+    ).length;
+  });
+  return score;
+}
+
+function findBestResponse(
+  userMessages: ChatCompletionRequest[],
+  possibleResponses: ChatCompletionRequest[]
+): ChatCompletionRequest {
+  const userTokensArray = userMessages
+    .filter((message) => message.role === "user")
+    .map((message) => tokenize(message.content));
+
+  // Check for specific user questions and return respective responses
+  if (userMessages[0].content.includes("how many pages")) {
+    return possibleResponses[possibleResponses.length - 1];
+  }
+  if (
+    userMessages[0].content.includes("give me a list") ||
+    userMessages[0].content.includes("asks for a list")
+  ) {
+    return possibleResponses.reduce((longest, current) =>
+      current.content.length > longest.content.length ? current : longest
+    );
+  }
+
+  let bestScore = 0;
+  let bestResponse: ChatCompletionRequest = { role: "assistant", content: "" };
+
+  possibleResponses.forEach((responseObj) => {
+    if (
+      responseObj.role === "assistant" &&
+      !isNegativeResponse(responseObj.content)
+    ) {
+      const currentScore = scoreResponse(userTokensArray, responseObj.content);
+
+      if (currentScore > bestScore) {
+        bestScore = currentScore;
+        bestResponse = responseObj;
+      }
+    }
+  });
+
+  // If no valid response is found, revert to the first one (even if it's negative)
+  if (bestResponse.content === "") {
+    bestResponse = possibleResponses[0];
+  }
+
+  return bestResponse;
+}
+
 const splitIntoChunks = (text: string, maxTokens: number) => {
   if (maxTokens < 1) {
     return [];
@@ -74,10 +159,9 @@ export async function POST(req: Request) {
       response.push(requests.data.choices[0].message);
     }
 
-    if (response.length > 1) {
-      return NextResponse.json(response[response.length - 2]);
-    }
-    return NextResponse.json(response[0]);
+    console.log(response);
+
+    return NextResponse.json(findBestResponse(messages, response));
   } catch (error) {
     console.dir(error, { depth: 5 });
     return new NextResponse("Internal Error", { status: 500 });
