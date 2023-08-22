@@ -74,11 +74,14 @@ const PreviewPage = ({ params }: { params: { id: string } }) => {
   };
 
   return (
-    <main className="flex justify-center flex-col items-center">
+    <main className="flex justify-center flex-col items-center flex-1">
       <Heading title="Preview & AI" />
       <div className="flex flex-col space-y-7 md:flex-row w-full justify-around md:space-x-5 px-10">
-        <div className="md:w-2/5">
-          <iframe src={url} className="w-full h-[400px] md:h-[950px]" />
+        <div className="md:w-2/5 flex justify-center">
+          <iframe
+            src={url && `${url}#toolbar=0`}
+            className="w-[80%] h-[400px] md:h-[760px]"
+          />
         </div>
         <div className="md:w-3/5 lg:px-8">
           <div>
