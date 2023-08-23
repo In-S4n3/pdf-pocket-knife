@@ -44,7 +44,9 @@ const PreviewPage = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     (async function () {
-      const response = url && (await axios.post("/api/pdfText", { url }));
+      const response =
+        url &&
+        (await axios.post(`${process.env.NEXT_PUBLIC_API}/pdfToText`, { url }));
       if (response) {
         setPdfText(response?.data);
       }
@@ -59,11 +61,19 @@ const PreviewPage = ({ params }: { params: { id: string } }) => {
       };
       const newMessages = [...messages, userMessage];
 
-      const response = await axios.post("/api/openAi", {
-        messages: newMessages,
-        pdfText,
-      });
-      setMessages((current) => [...current, userMessage, response.data]);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API}/openai`,
+        {
+          messages: newMessages,
+          pdfText,
+        }
+      );
+
+      setMessages((current) => [
+        ...current,
+        userMessage,
+        response.data.message,
+      ]);
 
       form.reset();
     } catch (error: any) {
@@ -78,10 +88,12 @@ const PreviewPage = ({ params }: { params: { id: string } }) => {
       <Heading title="Preview & AI" />
       <div className="flex flex-col md:flex-row w-full justify-around md:space-x-5 px-10">
         <div className="md:w-2/5 flex justify-center">
-          <iframe
-            src={url && `${url}#toolbar=0`}
-            className="w-[80%] h-[310px] md:h-[760px]"
-          />
+          {url && (
+            <iframe
+              src={`${url}#toolbar=0`}
+              className="w-[80%] h-[310px] md:h-[760px]"
+            />
+          )}
         </div>
         <div className="md:w-3/5 lg:px-8 pt-5">
           <div>
