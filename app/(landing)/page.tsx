@@ -1,5 +1,3 @@
-"use client";
-
 import { UploadButton } from "@/components/uploadButton";
 
 export default function Home() {
