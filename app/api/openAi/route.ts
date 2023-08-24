@@ -148,7 +148,16 @@ export async function POST(req: Request) {
     for (const chunk of chunks) {
       const instructionMessage: ChatCompletionRequestMessage = {
         role: "system",
-        content: `You are a helpful assistant with access to ${chunk} designed to answer questions ONLY from the given document content else say that you don't know the answer and always answer the queries in the language they are asked in. If the 'QUESTION' is in English, answer in English. If the 'QUESTION' is in Spanish, answer in Spanish and similarly if the QUESTION' is in XYZ language, answer it in the same XYZ language. Be as accurate as possible in providing answers only from the given document context. You are not like ChatGPT that answers every question. Answer only if it found in the given document content.`,
+        content: `As an helpful assistant analyzing multiple text:"""${chunk}""":
+          
+        1. Prioritize context for relevant responses.
+        2. Match question language in replies.
+        3. Quality > Quantity: Detailed answers preferred.
+        4. Synthesize across chunks for comprehensive responses.
+        5. Paraphrase instead of direct quotes.
+        6. If helpful, use examples for illustration.
+        
+        Assist users with valuable insights from provided text.`,
       };
 
       const requests = await openai.createChatCompletion({
@@ -158,8 +167,6 @@ export async function POST(req: Request) {
       });
       response.push(requests.data.choices[0].message);
     }
-
-    console.log(response);
 
     return NextResponse.json(findBestResponse(messages, response));
   } catch (error) {

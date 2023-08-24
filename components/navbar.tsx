@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 const montserrat = Montserrat({ weight: "600", subsets: ["latin"] });
 
-const Navbar = () => {
+export const Navbar = () => {
   return (
     <div className="flex w-full justify-between py-5 px-10 bg-slate-100">
       <div
@@ -35,5 +35,3 @@ const Navbar = () => {
     </div>
   );
 };
-
-export default Navbar;

@@ -5,8 +5,9 @@ import { useEffect, useRef } from "react";
 import { colors, customIcons } from "../app/(editor)/editor/cusmtomizations";
 import { getFile, getPSPDFKitLicenseKey } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { fillRectangleSVG } from "@/public/images/icons";
 
-export default function Editor() {
+export function Editor() {
   const router = useRouter();
   const containerRef = useRef(null);
   const { buffer, file } = useFileContext();
@@ -31,30 +32,29 @@ export default function Editor() {
         container,
         document: buffer || (await getFile()),
         baseUrl: `${window.location.protocol}//${window.location.host}/`,
-        annotationToolbarColorPresets: function ({
-          propertyName,
-        }: {
-          propertyName: string;
-        }) {
-          if (propertyName === "fill-color") {
-            return {
-              presets: colors(PSPDFKit),
-            };
-          }
-
-          if (propertyName === "stroke-color") {
-            return {
-              presets: colors(PSPDFKit),
-            };
-          }
-        },
       }).then((instance: any) => {
         const items = instance.toolbarItems;
         const { downloadButton } = customIcons(instance, file, router);
 
         instance.setToolbarItems(
-          items.splice(11, 0, { type: "rectangle" }) &&
-            items.splice(25, 1) &&
+          items.splice(11, 0, {
+            type: "custom",
+            title: "Whiteout",
+            onPress: () => {
+              const annotation = new PSPDFKit.Annotations.RectangleAnnotation({
+                pageIndex: instance.viewState.currentPageIndex,
+                boundingBox: new PSPDFKit.Geometry.Rect({
+                  left: 200,
+                  top: 100,
+                  width: 250,
+                  height: 500,
+                }),
+                fillColor: new PSPDFKit.Color({ r: 255, g: 255, b: 255 }),
+                strokeColor: new PSPDFKit.Color({ r: 255, g: 255, b: 255 }),
+              });
+              instance.create(annotation);
+            },
+          }) &&
             items.splice(12, 0, {
               type: "content-editor",
               responsiveGroup: "annotate",

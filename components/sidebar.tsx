@@ -2,9 +2,9 @@
 import { UserButton } from "@clerk/nextjs";
 import { PocketKnifeIcon } from "lucide-react";
 import Link from "next/link";
-import UploadButton from "./uploadButton";
+import { UploadButton } from "./uploadButton";
 
-const Sidebar = () => {
+export const Sidebar = () => {
   return (
     <div className="space-y-4 py-4 flex flex-col h-full bg-[#111827] text-white">
       <div className="px-3 py-2 flex">
@@ -26,5 +26,3 @@ const Sidebar = () => {
     </div>
   );
 };
-
-export default Sidebar;

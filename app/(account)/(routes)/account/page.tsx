@@ -1,6 +1,3 @@
-"use client";
-import { deleteFileFromFirebase, getFilesFromFirebase } from "@/lib/utils";
-import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -12,22 +9,15 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FileList } from "@/typings";
-import { Trash2 } from "lucide-react";
 import { Heading } from "@/components/heading";
+import { getFilesFromFirebase } from "@/actions/serverActions";
+import { DeleteButton } from "@/components/deleteButton";
 
-const AccountPage = () => {
-  const [filesList, setFilesList] = useState<FileList>();
-  const [isDeletedFile, setIsDeletedFile] = useState(false);
-
-  useEffect(() => {
-    (async function () {
-      const files = await getFilesFromFirebase();
-      if (files) setFilesList(files);
-    })();
-  }, [isDeletedFile]);
+const AccountPage = async () => {
+  const filesList: FileList = await getFilesFromFirebase();
 
   return (
-    <main className="h-full flex flex-col items-center justify-center space-y-10">
+    <main className="h-screen w-full flex flex-col items-center justify-start space-y-10 md:space-y-0">
       <Heading title="Your list of files" />
       <div className="w-3/4">
         <Table>
@@ -60,14 +50,7 @@ const AccountPage = () => {
                     </Link>
                   </TableCell>
                   <TableCell className="font-medium text-right">
-                    <Button
-                      onClick={async () => {
-                        await deleteFileFromFirebase(filePath);
-                        setIsDeletedFile(true);
-                      }}
-                    >
-                      <Trash2 />
-                    </Button>
+                    <DeleteButton filePath={filePath} />
                   </TableCell>
                 </TableRow>
               );
