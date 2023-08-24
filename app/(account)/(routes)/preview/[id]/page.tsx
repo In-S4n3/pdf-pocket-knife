@@ -16,6 +16,7 @@ import { UserAvatar } from "@/components/userAvatar";
 import { UiAvatar } from "@/components/uiAvatar";
 import { Heading } from "@/components/heading";
 import { Empty } from "@/components/empty";
+import { Loader } from "@/components/loader";
 
 const PreviewPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -77,8 +78,10 @@ const PreviewPage = ({ params }: { params: { id: string } }) => {
     <main className="flex justify-center flex-col items-center flex-grow">
       <Heading title="Preview & AI" />
       <div className="flex flex-col md:flex-row w-full justify-around md:space-x-5 px-10">
-        <div className="md:w-2/5 flex justify-center">
-          {url && (
+        <div className="md:w-2/5 flex justify-center relative">
+          {!url ? (
+            <Loader />
+          ) : (
             <iframe
               src={`${url}#toolbar=0`}
               className="w-[80%] h-[310px] md:h-[760px] "
