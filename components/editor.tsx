@@ -1,16 +1,16 @@
 "use client";
 
-import { useFileContext } from "@/app/context/FileContext";
 import { useEffect, useRef } from "react";
-import { colors, customIcons } from "../app/(editor)/editor/cusmtomizations";
+import { customIcons } from "../app/(editor)/editor/cusmtomizations";
 import { getFile, getPSPDFKitLicenseKey } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { fillRectangleSVG } from "@/public/images/icons";
+import { useDocumentStore } from "@/store/documentStore";
 
 export function Editor() {
   const router = useRouter();
   const containerRef = useRef(null);
-  const { buffer, file } = useFileContext();
+  const buffer = useDocumentStore((state) => state.buffer);
+  const file = useDocumentStore((state) => state.file);
 
   useEffect(() => {
     const container = containerRef.current;

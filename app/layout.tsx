@@ -2,7 +2,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import type { Metadata } from "next";
 
-import { FileContextProvider } from "./context/FileContext";
 import { Montserrat } from "next/font/google";
 
 const montserrat = Montserrat({ weight: "600", subsets: ["latin"] });
@@ -22,9 +21,7 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <head />
         <body className={montserrat.className}>
-          <ClerkProvider>
-            <FileContextProvider>{children}</FileContextProvider>
-          </ClerkProvider>
+          <ClerkProvider>{children}</ClerkProvider>
         </body>
       </html>
     </>

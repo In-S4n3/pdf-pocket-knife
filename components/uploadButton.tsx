@@ -3,12 +3,13 @@ import { useRouter } from "next/navigation";
 import { storeFile } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
-import { useFileContext } from "@/app/context/FileContext";
+import { useDocumentStore } from "@/store/documentStore";
 
 export const UploadButton = () => {
   const refButton = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
-  const { setBuffer, setFile } = useFileContext();
+  const setFile = useDocumentStore((state) => state.setFile);
+  const setBuffer = useDocumentStore((state) => state.setBuffer);
 
   const handleFile = async (e: any) => {
     const file = e.target.files[0];
