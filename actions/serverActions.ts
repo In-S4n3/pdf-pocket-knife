@@ -27,13 +27,10 @@ export const getFilesFromFirebase = async () => {
 };
 
 export const deleteFileFromFirebase = async (filePath: string) => {
-  const fileRef = ref(storage, `PDF/${filePath}`);
-
-  deleteObject(fileRef)
-    .then(() => {
-      console.log("File deleted");
-    })
-    .catch((error) => {
-      console.log("Uh-oh, an error occurred!");
-    });
+  try {
+    const fileRef = ref(storage, `PDF/${filePath}`);
+    await deleteObject(fileRef);
+  } catch (error) {
+    console.log(error);
+  }
 };
