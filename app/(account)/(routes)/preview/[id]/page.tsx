@@ -23,7 +23,9 @@ const PreviewPage = ({ params }: { params: { id: string } }) => {
   const { id } = params;
   const [url, setUrl] = useState("");
   const [pdfText, setPdfText] = useState("");
-  const [messages, setMessages] = useState<OpenAI.Chat.CreateChatCompletionRequestMessage[]>([]);
+  const [messages, setMessages] = useState<
+    OpenAI.Chat.CreateChatCompletionRequestMessage[]
+  >([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
