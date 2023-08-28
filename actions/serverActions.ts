@@ -2,6 +2,7 @@
 
 import { storage } from "@/configs/firebase";
 import { deleteObject, getDownloadURL, listAll, ref } from "firebase/storage";
+import { revalidatePath } from "next/cache";
 
 export const getFilesFromFirebase = async () => {
   const fileRef = ref(storage, `PDF/`);
@@ -22,7 +23,6 @@ export const getFilesFromFirebase = async () => {
         : { url, name: "", id, date: date };
     })
   );
-
   return filesDetails;
 };
 
@@ -30,6 +30,7 @@ export const deleteFileFromFirebase = async (filePath: string) => {
   try {
     const fileRef = ref(storage, `PDF/${filePath}`);
     await deleteObject(fileRef);
+    revalidatePath("/account");
   } catch (error) {
     console.log(error);
   }
