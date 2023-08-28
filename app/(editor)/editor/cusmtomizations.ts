@@ -17,6 +17,7 @@ export const customIcons = (
           uploadToFirebase(buffer, file);
           setTimeout(() => {
             router.push("/account");
+            router.refresh();
           }, 3000);
         });
       },
