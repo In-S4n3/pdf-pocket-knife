@@ -1,12 +1,10 @@
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
-import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
 });
-
-const openai = new OpenAIApi(configuration);
 
 type ChatCompletionRequest = {
   role: "user" | "assistant";
@@ -125,7 +123,7 @@ const splitIntoChunks = (text: string, maxTokens: number) => {
 
 export async function POST(req: Request) {
   try {
-    if (!configuration.apiKey) {
+    if (!openai.apiKey) {
       return new NextResponse("OpenAI API Key not configured.", {
         status: 500,
       });
@@ -146,17 +144,27 @@ export async function POST(req: Request) {
 
     let response: any[] = [];
     for (const chunk of chunks) {
-      const instructionMessage: ChatCompletionRequestMessage = {
-        role: "system",
-        content: `You are a helpful assistant with access to ${chunk} designed to answer questions ONLY from the given document content else say that you don't know the answer and always answer the queries in the language they are asked in. If the 'QUESTION' is in English, answer in English. If the 'QUESTION' is in Spanish, answer in Spanish and similarly if the QUESTION' is in XYZ language, answer it in the same XYZ language. Be as accurate as possible in providing answers only from the given document context. You are not like ChatGPT that answers every question. Answer only if it found in the given document content.`,
-      };
+      const instructionMessage: OpenAI.Chat.CreateChatCompletionRequestMessage =
+        {
+          role: "system",
+          content: `As an helpful assistant analyzing multiple text:"""${chunk}""":
+          
+        1. Prioritize context for relevant responses.
+        2. Match question language in replies.
+        3. Quality > Quantity: Detailed answers preferred.
+        4. Synthesize across chunks for comprehensive responses.
+        5. Paraphrase instead of direct quotes.
+        6. If helpful, use examples for illustration.
+        
+        Assist users with valuable insights from provided text.`,
+        };
 
-      const requests = await openai.createChatCompletion({
+      const requests = await openai.chat.completions.create({
         model: "gpt-3.5-turbo-16k",
         messages: [instructionMessage, ...messages],
         temperature: 0.4,
       });
-      response.push(requests.data.choices[0].message);
+      response.push(requests.choices[0].message);
     }
 
     return NextResponse.json(findBestResponse(messages, response));

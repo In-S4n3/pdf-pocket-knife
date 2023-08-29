@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ChatCompletionRequestMessage } from "openai";
+import OpenAI from "openai";
 import { formSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,13 +16,16 @@ import { UserAvatar } from "@/components/userAvatar";
 import { UiAvatar } from "@/components/uiAvatar";
 import { Heading } from "@/components/heading";
 import { Empty } from "@/components/empty";
+import { Loader } from "@/components/loader";
 
 const PreviewPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   const { id } = params;
   const [url, setUrl] = useState("");
   const [pdfText, setPdfText] = useState("");
-  const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([]);
+  const [messages, setMessages] = useState<
+    OpenAI.Chat.CreateChatCompletionRequestMessage[]
+  >([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,7 +58,7 @@ const PreviewPage = ({ params }: { params: { id: string } }) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const userMessage: ChatCompletionRequestMessage = {
+      const userMessage: OpenAI.Chat.CreateChatCompletionRequestMessage = {
         role: "user",
         content: values.prompt,
       };
@@ -84,14 +87,16 @@ const PreviewPage = ({ params }: { params: { id: string } }) => {
   };
 
   return (
-    <main className="flex justify-center flex-col items-center flex-1">
+    <main className="flex justify-center flex-col items-center flex-grow">
       <Heading title="Preview & AI" />
       <div className="flex flex-col md:flex-row w-full justify-around md:space-x-5 px-10">
-        <div className="md:w-2/5 flex justify-center">
-          {url && (
+        <div className="md:w-2/5 flex justify-center relative">
+          {!url ? (
+            <Loader />
+          ) : (
             <iframe
               src={`${url}#toolbar=0`}
-              className="w-[80%] h-[310px] md:h-[760px]"
+              className="w-[80%] h-[310px] md:h-[760px] "
             />
           )}
         </div>

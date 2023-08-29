@@ -17,7 +17,7 @@ const AccountPage = async () => {
   const filesList: FileList = await getFilesFromFirebase();
 
   return (
-    <main className="h-full flex flex-col items-center justify-center space-y-10">
+    <main className="h-screen w-full flex flex-col items-center justify-start space-y-10 md:space-y-0">
       <Heading title="Your list of files" />
       <div className="w-3/4">
         <Table>
