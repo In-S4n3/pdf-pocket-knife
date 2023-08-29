@@ -49,9 +49,11 @@ const PreviewPage = ({ params }: { params: { id: string } }) => {
     (async function () {
       const response =
         url &&
-        (await axios.post(`${process.env.NEXT_PUBLIC_API}/pdfToText`, { url }));
+        (await axios.post(`${process.env.NEXT_PUBLIC_API}/convert/pdfToText`, {
+          url,
+        }));
       if (response) {
-        setPdfText(response?.data);
+        setPdfText(response?.data.data);
       }
     })();
   }, [url]);
@@ -71,12 +73,7 @@ const PreviewPage = ({ params }: { params: { id: string } }) => {
           pdfText,
         }
       );
-
-      setMessages((current) => [
-        ...current,
-        userMessage,
-        response.data.message,
-      ]);
+      setMessages((current) => [...current, userMessage, response.data.data]);
 
       form.reset();
     } catch (error: any) {
