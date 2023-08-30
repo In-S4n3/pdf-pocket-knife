@@ -2,10 +2,12 @@
 
 import { useFileContext } from "@/app/context/FileContext";
 import { useEffect, useRef } from "react";
-import { colors, customIcons } from "../app/(editor)/editor/cusmtomizations";
+import {
+  createRectangle,
+  customIcons,
+} from "../app/(editor)/editor/cusmtomizations";
 import { getFile, getPSPDFKitLicenseKey } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { fillRectangleSVG } from "@/public/images/icons";
 
 export function Editor() {
   const router = useRouter();
@@ -35,37 +37,33 @@ export function Editor() {
       }).then((instance: any) => {
         const items = instance.toolbarItems;
         const { downloadButton } = customIcons(instance, file, router);
-
+        console.log(items);
         instance.setToolbarItems(
-          items.splice(14, 0, {
-            type: "responsive-group",
-            title: "Tools",
-            id: "annotate",
-            mediaQueries: ["(max-width:1266px)"],
+          items.splice(11, 0, {
+            type: "custom",
+            title: "Whiteout",
+            onPress: () => {
+              createRectangle(PSPDFKit, instance);
+            },
           }) &&
-            items.splice(11, 0, {
-              type: "custom",
-              title: "Whiteout",
-              onPress: () => {
-                const annotation = new PSPDFKit.Annotations.RectangleAnnotation(
-                  {
-                    pageIndex: instance.viewState.currentPageIndex,
-                    boundingBox: new PSPDFKit.Geometry.Rect({
-                      left: 200,
-                      top: 100,
-                      width: 250,
-                      height: 500,
-                    }),
-                    fillColor: new PSPDFKit.Color({ r: 255, g: 255, b: 255 }),
-                    strokeColor: new PSPDFKit.Color({ r: 255, g: 255, b: 255 }),
-                  }
-                );
-                instance.create(annotation);
-              },
-            }) &&
             items.splice(12, 0, {
+              type: "redact-rectangle",
+              id: "custom-dropdown",
+              dropdownGroup: "my-group",
+            }) &&
+            items.splice(13, 0, {
+              type: "form-creator",
+              dropdownGroup: "my-group",
+            }) &&
+            items.splice(14, 0, {
               type: "content-editor",
               responsiveGroup: "annotate",
+            }) &&
+            items.splice(15, 0, {
+              type: "responsive-group",
+              title: "Tools",
+              id: "annotate",
+              mediaQueries: ["(max-width:1266px)"],
             }) &&
             items.splice(35, 0, {
               type: "undo",
@@ -73,7 +71,7 @@ export function Editor() {
             items.splice(36, 0, {
               type: "redo",
             }) &&
-            items.splice(37, 0, downloadButton)
+            items.splice(44, 0, downloadButton)
         );
 
         instance.setToolbarItems(
@@ -82,6 +80,7 @@ export function Editor() {
               item.type !== "search" &&
               item.type !== "print" &&
               item.type !== "export-pdf" &&
+              item.type !== "note" &&
               item.type !== "multi-annotations-selection"
             );
           })
