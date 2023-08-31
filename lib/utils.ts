@@ -112,17 +112,16 @@ export const getFile = async (): Promise<ArrayBuffer | null> => {
 };
 
 // Firebase functions ---------------------------------------------------------------------
-export const uploadToFirebase = async (buffer: Buffer, file: any) => {
+export const uploadToFirebase = async (buffer: Buffer, file: any): Promise<void> => {
   try {
     const blob = new Blob([buffer], { type: "application/pdf" });
     const fileRef = ref(
       storage,
       `PDF/${file.name + "_" + v4() + "_" + new Date()}`
     );
-    const success = await uploadBytes(fileRef, blob);
-    return success;
+    if (blob && fileRef) await uploadBytes(fileRef, blob);
   } catch (error) {
-    console.error(error);
+    console.error(error); 
   }
 };
 
