@@ -12,11 +12,13 @@ export const Sidebar = () => {
           <div className="relative h-8 w-8 mr-4 flex items-center">
             <PocketKnifeIcon />
           </div>
-          <h1 className={"text-xl font-bold gradient-text flex items-center"}>
+          <h1
+            className={"md:text-xl font-bold gradient-text flex items-center"}
+          >
             PDF Pocket Knife
           </h1>
         </Link>
-        <div className="flex pl-20">
+        <div className="flex pl-20 pt-5 md:pt-0">
           <UserButton afterSignOutUrl="/" />
         </div>
       </div>
