@@ -18,7 +18,7 @@ export const customIcons = (
           setTimeout(() => {
             router.push("/account");
             router.refresh();
-          }, 3000);
+          }, 1500);
         });
       },
     },
