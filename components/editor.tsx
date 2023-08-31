@@ -12,7 +12,7 @@ import { useDocumentStore } from "@/store/documentStore";
 export function Editor() {
   const router = useRouter();
   const containerRef = useRef(null);
-  const buffer = useDocumentStore((state:any) => state.buffer);
+  const buffer = useDocumentStore((state: any) => state.buffer);
   const file = useDocumentStore((state: any) => state.file);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export function Editor() {
       }).then((instance: any) => {
         const items = instance.toolbarItems;
         const { downloadButton } = customIcons(instance, file, router);
-        console.log(items);
+
         instance.setToolbarItems(
           items.splice(11, 0, {
             type: "custom",
