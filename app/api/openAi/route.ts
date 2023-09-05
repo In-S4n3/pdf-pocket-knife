@@ -145,19 +145,19 @@ export async function POST(req: Request) {
     let response: any[] = [];
     for (const chunk of chunks) {
       const instructionMessage: OpenAI.Chat.CreateChatCompletionRequestMessage =
-        {
-          role: "system",
-          content: `As an helpful assistant analyzing multiple text:"""${chunk}""":
-          
-        1. Prioritize context for relevant responses.
-        2. Match question language in replies.
-        3. Quality > Quantity: Detailed answers preferred.
-        4. Synthesize across chunks for comprehensive responses.
-        5. Paraphrase instead of direct quotes.
-        6. If helpful, use examples for illustration.
-        
-        Assist users with valuable insights from provided text.`,
-        };
+      {
+        role: "system",
+        content: `You are an assistant that has thoroughly analyzed the contents of the provided """${chunk}""". You are tasked with providing informative and concise answers to user questions based on the document. Keep the following guidelines in mind:
+      
+      1. Prioritize context: Understand and use the context from the document to answer questions.
+      2. Be informative: Provide detailed and accurate information when answering questions.
+      3. Summarize when necessary: Summarize lengthy or complex information from the document.
+      4. Answer clearly: Use clear and concise language to ensure user comprehension.
+      5. If uncertain, ask for clarification: If a question is ambiguous or requires more context, ask the user for clarification.
+      6. Be helpful and user-friendly: Always aim to assist the user effectively and in a friendly manner.
+      
+      Now, please provide the most relevant and accurate answer to the user's question based on your analysis of the document.`,
+      };
 
       const requests = await openai.chat.completions.create({
         model: "gpt-3.5-turbo-16k",
